@@ -1,7 +1,7 @@
-import { View, Text, FlatList, Image, StyleSheet } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
-import { collection, getDocs, query } from 'firebase/firestore'
-import { db } from '../config/firebaseConfig'
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { db } from '../config/firebaseConfig';
 
 const Slider = () => {
     const [sliderList, setSliderList] = useState([]);
@@ -10,7 +10,7 @@ const Slider = () => {
 
     useEffect(() => {
         GetSlider();
-    }, [])
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -34,7 +34,11 @@ const Slider = () => {
             sliderData.push(doc.data());
         });
         setSliderList(sliderData);
-    }
+    };
+
+    const openLink = (url) => {
+        Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
+    };
 
     return (
         <View>
@@ -46,24 +50,26 @@ const Slider = () => {
                 horizontal={true}
                 style={styles.flatList}
                 renderItem={({ item }) => (
-                    <Image 
-                        source={{ uri: item.imageUrl }}
-                        style={styles.image} 
-                    />
+                    <TouchableOpacity onPress={() => openLink(item.url)}>
+                        <Image 
+                            source={{ uri: item.imageUrl }}
+                            style={styles.image} 
+                        />
+                    </TouchableOpacity>
                 )}
                 keyExtractor={(item, index) => index.toString()}
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
             />
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         padding: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     flatList: {
         paddingLeft: 20,
@@ -72,8 +78,8 @@ const styles = StyleSheet.create({
         width: 300,
         height: 160,
         borderRadius: 15,
-        marginRight: 20
-    }
+        marginRight: 20,
+    },
 });
 
 export default Slider;

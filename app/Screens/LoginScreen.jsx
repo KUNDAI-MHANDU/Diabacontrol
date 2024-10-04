@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { StyleSheet, Text, View, Animated, Easing, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Keyboard, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Animated, Easing, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Keyboard, Dimensions, Pressable } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -141,9 +141,9 @@ export default function LoginScreen() {
           </View>
           <View style={{alignItems: 'center', justifyContent: 'center'}}>
             <Text>do not have an account? 
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text style={{color: 'orange'}}> Sign Up Now</Text>
-              </TouchableOpacity>
+              </Pressable>
             </Text>
           </View>
         </View>

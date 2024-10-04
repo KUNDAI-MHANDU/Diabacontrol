@@ -1,5 +1,5 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity, useWindowDimensions, } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
@@ -8,6 +8,7 @@ import * as FileSystem from 'expo-file-system';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import LottieView from 'lottie-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function FoodScanner() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -22,9 +23,9 @@ export default function FoodScanner() {
 
   const bottomSheetModalRef = useRef(null);
 
-  const snapPoints = ["25", "48", "75"];
+  const snapPoints = ["25", "48", "90"];
 
-  const genAI = new GoogleGenerativeAI("AIzaSyBHiTjGZn3oEcmhhNCRCKnMGAq9beN2ncw");
+  const genAI = new GoogleGenerativeAI("AIzaSyBXqyUQKZO5e12dU1jYQ4O4deWj5rm6xEg");
 
   useEffect(() => {
     (async () => {
@@ -67,7 +68,7 @@ export default function FoodScanner() {
 
         const filePart1 = await fileToGenerativePart(photo.uri, "image/jpeg");
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-        const prompt = "based on the image provided give a rough estimate of how many carbohydrates the food may contain. no accuracy needed";
+        const prompt = "based on the image provided give a rough estimate of how many carbohydrates the food may contain. no accuracy needed just provide a rough number no need for full detail";
         const imageParts = [filePart1];
         
         try {
@@ -112,9 +113,27 @@ export default function FoodScanner() {
             backgroundStyle={{ borderRadius: 50 }}
             onDismiss={() => {setIsOpen(false); setPhoto(undefined)}}
           >
-            <View style={styles.contentContainer}>
-              <Text>{result || "Processing..."}</Text>
+          <ScrollView>
+            <Text style={{
+                fontSize: 22,
+                fontWeight: 'bold',
+                color: '#333',
+                textAlign: 'center',
+                marginVertical: 20,
+            }}>Diaba_Intelligence</Text>
+            <View style={{height: 240, width: "100%",}}>
+              <LottieView source={require("../../assets/Animation - 1727891768974.json")}
+              style={{width: "100%", height: "100%"}}
+              autoPlay
+              loop
+              />
             </View>
+            <LinearGradient
+              colors={['rgba(255,165,0,0.7)', 'transparent']}
+              style={styles.contentContainer}
+            >
+              <Text>{result || "Processing..."}</Text>
+            </LinearGradient>
             <View style={{alignItems: 'center', gap: 10,}}>
               <TouchableOpacity style={styles.button} onPress={sharePic}>
                 <Text>Share</Text>
@@ -149,6 +168,7 @@ export default function FoodScanner() {
                 </View>
               </TouchableOpacity>
             </View>
+            </ScrollView>
           </BottomSheetModal>
         </BottomSheetModalProvider>
       </SafeAreaView>
@@ -226,8 +246,17 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     alignItems: "center",
-    paddingHorizontal: 15,
-  },
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'orange',
+    margin: 10,
+    backgroundColor: '#fff',  
+    shadowColor: 'rgba(255, 165, 0, 0.9)',  
+    shadowOffset: { width: 0, height: 0 },  
+    shadowOpacity: 1,   
+    shadowRadius: 15,   
+    elevation: 10,     
+  },  
   row: {
     width: "100%",
     flexDirection: "row",

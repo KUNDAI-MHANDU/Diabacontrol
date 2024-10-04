@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Feather from '@expo/vector-icons/Feather';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -24,24 +26,24 @@ const Features = () => {
                 display: 'flex',
                 gap: 20
             }}>
-                <View style={styles.fContainer}>
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('calculator')}>
                     <Entypo style={styles.features} name="calculator" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
                     }}>Calculator</Text>
-                </View>
-                <View style={styles.fContainer}>
-                    <Ionicons style={styles.features} name="water" size={34} color="orange" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('reports')}>
+                    <FontAwesome style={styles.features} name="list-alt" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
-                    }}>Glucose Monitor</Text>
-                </View>
-                <View style={styles.fContainer}>
+                    }}>Reports</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.fContainer}>
                     <Fontisto style={styles.features} name="first-aid-alt" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
                     }}>Hypoglycemic</Text>
-                </View>
+                </TouchableOpacity>
             </View>
             <View style={{
                 display: 'flex',
@@ -53,12 +55,12 @@ const Features = () => {
                         fontSize: 12,
                     }}>Videos</Text>
                 </TouchableOpacity>
-                <View style={styles.fContainer}>
-                    <FontAwesome style={styles.features} name="heart" size={34} color="orange" />
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('communite_chat')}>
+                    <FontAwesome style={styles.features} name="wechat" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
-                    }}>Life Style</Text>
-                </View>
+                    }}>Ask Communite</Text>
+                </TouchableOpacity>
                 <View style={styles.fContainer}>
                     <Ionicons style={styles.features} name="fast-food" size={34} color="orange" />
                     <Text style={{
@@ -70,18 +72,18 @@ const Features = () => {
                 display: 'flex',
                 gap: 20
             }}>
-                <View style={styles.fContainer}>
-                    <FontAwesome style={styles.features} name="list-alt" size={34} color="orange" />
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('records')}>
+                    <Feather style={styles.features} name="save" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
-                    }}>Records</Text>
-                </View>
-                <View style={styles.fContainer}>
-                    <Ionicons style={styles.features} name="alarm" size={34} color="orange" />
+                    }}>Record Data</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('Diaba_Intelligence')}>
+                    <FontAwesome5 style={styles.features} name="brain" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
-                    }}>Reminder</Text>
-                </View>
+                    }}>Ask AI</Text>
+                </TouchableOpacity>
                 <View style={styles.fContainer}>
                     <MaterialCommunityIcons style={styles.features} name="head-heart" size={34} color="orange" />
                     <Text style={{

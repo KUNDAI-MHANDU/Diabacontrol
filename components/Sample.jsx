@@ -16,7 +16,7 @@ const Sample = () => {
 
   const GetVideo = async () => {
       setVideoList([]);
-      const q = query(collection(db, 'Videos'));
+      const q = query(collection(db, 'sample'));
       const querySnapShot = await getDocs(q);
 
       let videoData = [];
