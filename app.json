@@ -24,7 +24,14 @@
         "permissions": [
           "CAMERA"
         ]
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -48,6 +55,11 @@
       ],
       "react-native-vision-camera"
     ],
-    "scheme": "diabacontrol"
+    "scheme": "diabacontrol",
+    "extra": {
+      "eas": {
+        "projectId": "3e040f22-dda8-4ef1-a38f-43f8c9f13882"
+      }
+    }
   }
 }

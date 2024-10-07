@@ -50,15 +50,15 @@ const InsulinReport = () => {
 
   return (
     <View>
-        {insulinDose.insulinValues?.length > 0 ? (
-        <View>
-            <Text style={{
+                    <Text style={{
                 fontSize: 22,
                 fontWeight: 'bold',
                 color: '#333',
                 textAlign: 'center',
                 marginVertical: 20,
             }}>Insulin Dose (units)</Text>
+        {insulinDose.insulinValues?.length > 0 ? (
+        <View>
             <LineChart
             data={{
                 labels: insulinDose.dates.slice(-4),  // Show the last 7 entries

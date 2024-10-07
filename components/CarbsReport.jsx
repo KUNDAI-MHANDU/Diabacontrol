@@ -48,9 +48,7 @@ const CarbsReport = () => {
 
   return (
     <View>
-      {carbAmount.carbsValue?.length > 0 ? (
-        <View>
-          <Text
+        <Text
             style={{
               fontSize: 22,
               fontWeight: 'bold',
@@ -60,7 +58,9 @@ const CarbsReport = () => {
             }}
           >
             Carbohydrate Intake (g)
-          </Text>
+        </Text>
+      {carbAmount.carbsValue?.length > 0 ? (
+        <View>
           <BarChart
             data={{
               labels: carbAmount.dates.slice(-4), // Show the last 7 entries

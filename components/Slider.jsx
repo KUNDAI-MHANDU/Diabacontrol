@@ -1,10 +1,11 @@
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 
 const Slider = () => {
     const [sliderList, setSliderList] = useState([]);
+    const [loading, setLoading] = useState(true); 
     const flatListRef = useRef(null);
     const scrollIndex = useRef(0);
 
@@ -34,15 +35,24 @@ const Slider = () => {
             sliderData.push(doc.data());
         });
         setSliderList(sliderData);
+        setLoading(false); 
     };
 
     const openLink = (url) => {
         Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
     };
 
+    if (loading) {
+        return (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 160,}}>
+            <ActivityIndicator size="large" color="orange" />
+            <Text>Loading...</Text>
+          </View>
+        );
+      }
+
     return (
         <View>
-            <Text style={styles.title}>#Offers for you</Text>
 
             <FlatList
                 ref={flatListRef}

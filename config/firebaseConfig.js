@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -14,11 +14,13 @@ const firebaseConfig = {
     storageBucket: "diabacontrol-27ffe.appspot.com",
     messagingSenderId: "975014458613",
     appId: "1:975014458613:web:737b55a7c534c3d30601bc",
-    measurementId: "G-7NP3SLWSYH"
+    measurementId: "G-7NP3SLWSYH",
+    databaseURL: "https://diabacontrol-27ffe-default-rtdb.firebaseio.com/",
   };
   
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app)
+export const database = getDatabase(app);
 // const analytics = getAnalytics(app);

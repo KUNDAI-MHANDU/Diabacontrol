@@ -1,118 +1,156 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, ImageBackground } from 'react-native';
+import { View, StyleSheet, Text, ImageBackground, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { GiftedChat, Bubble, Avatar } from 'react-native-gifted-chat';
 import { useUser } from '@clerk/clerk-expo';
-import { getDatabase, ref, set, push, onValue } from "firebase/database"; // Import onValue for reading data
+import { getDatabase, ref, set, push, onValue, remove } from "firebase/database";
+import { useActionSheet } from '@expo/react-native-action-sheet'; // Import ActionSheet
 
 const CommuniteChatScreen = () => {
   const [messages, setMessages] = useState([]);
+  const [replyingTo, setReplyingTo] = useState(null); // State for reply
+  const { showActionSheetWithOptions } = useActionSheet(); // Get the ActionSheet function
   const { user } = useUser();
 
-  // Fetch messages from Firebase Realtime Database
+  // Fetch messages from Firebase
   useEffect(() => {
     const db = getDatabase();
-    const messagesRef = ref(db, 'messages'); // Reference to the 'messages' path
+    const messagesRef = ref(db, 'messages');
 
-    // Listen for new messages in the database
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // Transform the data into an array of messages
         const loadedMessages = Object.keys(data).map((key) => ({
           _id: key,
           text: data[key].text,
           createdAt: new Date(data[key].createdAt),
           user: data[key].user,
+          replyTo: data[key].replyTo || null, // Load reply data
         }));
-
-        // Sort the messages by the creation date
         loadedMessages.sort((a, b) => b.createdAt - a.createdAt);
-
-        // Update the state to display the messages
         setMessages(loadedMessages);
       }
     });
 
-    return () => unsubscribe(); // Cleanup the listener when the component unmounts
+    return () => unsubscribe();
   }, []);
 
   const onSend = useCallback((newMessages = []) => {
-    // Update the local state to append new messages
     setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+        GiftedChat.append(previousMessages, newMessages.map((message) => ({
+          ...message,
+          createdAt: new Date(message.createdAt),  // Ensure the date is a Date object
+          replyTo: replyingTo ? { text: replyingTo.text, user: replyingTo.user } : null,
+        })))
+      );
 
     const db = getDatabase();
-    const messagesRef = ref(db, 'messages'); // Specify the path in your Realtime Database
-
-    // Loop through each message and push it to the Firebase database
+    const messagesRef = ref(db, 'messages');
     newMessages.forEach((message) => {
-      const newMessageRef = push(messagesRef); // Push each message as a new node
+      const newMessageRef = push(messagesRef);
       set(newMessageRef, {
         ...message,
-        createdAt: message.createdAt.toISOString(), // Store the date as a string
+        createdAt: message.createdAt.toISOString(),
+        replyTo: replyingTo ? { text: replyingTo.text, user: replyingTo.user } : null,
       });
     });
-  }, []);
+
+    setReplyingTo(null);
+  }, [replyingTo]);
+
+  // Function to delete a message from Firebase
+  const handleDeleteMessage = (messageId) => {
+    const db = getDatabase();
+    const messageRef = ref(db, `messages/${messageId}`);
+    remove(messageRef); // Delete message from Firebase
+  };
 
   const renderBubble = (props) => {
     return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: '#0084ff', // Blue for sent messages
-          },
-          left: {
-            backgroundColor: '#f0f0f0', // Light grey for received messages
-          },
-        }}
-        textStyle={{
-          right: {
-            color: '#fff',
-          },
-          left: {
-            color: '#333',
-          },
-        }}
-      />
+      <View>
+        {props.currentMessage.replyTo && (
+          <View style={styles.replyContainer}>
+            <Text style={styles.replyText}>
+              {props.currentMessage.replyTo.user.name}: {props.currentMessage.replyTo.text}
+            </Text>
+          </View>
+        )}
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: { backgroundColor: '#0084ff' },
+            left: { backgroundColor: '#f0f0f0' },
+          }}
+          textStyle={{
+            right: { color: '#fff' },
+            left: { color: '#333' },
+          }}
+          onLongPress={() => onLongPress(null, props.currentMessage)} // Attach onLongPress here
+        />
+      </View>
     );
   };
 
-  const renderAvatar = (props) => {
-    return (
-      <Avatar
-        {...props}
-        imageStyle={{
-          left: {
-            borderRadius: 50,
-            borderWidth: 2,
-            borderColor: '#ddd',
-          },
-        }}
-      />
+  const onLongPress = (context, message) => {
+    const options = ['Reply', 'Delete', 'Cancel'];
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex: 1, // "Delete" will appear red
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          setReplyingTo(message); // Set the message to reply to
+        } else if (buttonIndex === 1) {
+          // Confirm delete action before proceeding
+          Alert.alert(
+            'Delete Message',
+            'Are you sure you want to delete this message?',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+              {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => handleDeleteMessage(message._id), // Call delete function
+              },
+            ],
+            { cancelable: true }
+          );
+        }
+      }
     );
   };
 
   return (
-    <ImageBackground
-      source={{ uri: 'https://www.example.com/background.png' }} // Add a stylish background
-      style={styles.background}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
     >
-      <GiftedChat
-        messages={messages}
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: user?.id || 1, // Use user ID from your user object
-          name: user?.fullName || 'User',
-          avatar: user?.imageUrl || 'https://www.example.com/default-avatar.png', // Default avatar if not available
-        }}
-        renderBubble={renderBubble}
-        renderAvatar={renderAvatar}
-        placeholder="Type a message..."
-        showAvatarForEveryMessage={true} // Shows avatar for every message
-      />
-    </ImageBackground>
+      <ImageBackground
+        source={{ uri: 'https://www.example.com/background.png' }}
+        style={styles.background}
+      >
+        <GiftedChat
+          messages={messages}
+          onSend={(messages) => onSend(messages)}
+          onLongPress={onLongPress}
+          user={{
+            _id: user?.id || 1,
+            name: user?.fullName || 'User',
+            avatar: user?.imageUrl || 'https://www.example.com/default-avatar.png',
+          }}
+          renderBubble={renderBubble}
+          placeholder="Type a message..."
+          showAvatarForEveryMessage={true}
+          scrollToBottom // Enables automatic scrolling to bottom
+          inverted={true} // Default: messages appear at the bottom
+        />
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -120,10 +158,15 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
-  bubble: {
-    backgroundColor: '#e6f0ff',
-    padding: 8,
-    borderRadius: 10,
+  replyContainer: {
+    backgroundColor: '#e6e6e6',
+    padding: 5,
+    marginBottom: 5,
+    borderRadius: 5,
+  },
+  replyText: {
+    fontStyle: 'italic',
+    color: '#555',
   },
 });
 

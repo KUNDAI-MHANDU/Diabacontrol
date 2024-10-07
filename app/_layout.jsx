@@ -7,6 +7,9 @@ import ReportScreen from './Screens/Reports';
 import CommuniteChatScreen from './Screens/CommunityChat';
 import AiChat from './Screens/AIChat';
 import SearchResultScreen from './Screens/SearchResultScreen';
+import Tip from './Screens/Tip';
+import FoodSuggestions from './Screens/FoodSuggestions';
+import LifeStyle from './Screens/LifeStyle';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +24,9 @@ const MainLayout = () => {
         <Stack.Screen name='reports' component={ReportScreen}/>
         <Stack.Screen name='communite_chat' component={CommuniteChatScreen}/>
         <Stack.Screen name='Diaba_Intelligence' component={AiChat}/>
+        <Stack.Screen name='tips' component={Tip}/>
+        <Stack.Screen name='food' component={FoodSuggestions}/>
+        <Stack.Screen name='lifestyle' component={LifeStyle}/>
     </Stack.Navigator>
   )
 }

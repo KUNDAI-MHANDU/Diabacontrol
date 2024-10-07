@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, } from 'react-native';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import YouTubeIframe from 'react-native-youtube-iframe';
@@ -14,7 +14,7 @@ const SearchResultScreen = ({ route }) => {
 
   // Fetch and filter video list based on search query
   const GetFilteredVideos = async (queryText) => {
-    const q = query(collection(db, 'sample'));
+    const q = query(collection(db, 'Videos'));
     const querySnapShot = await getDocs(q);
 
     let videoData = [];

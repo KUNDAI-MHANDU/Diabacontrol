@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TextInput, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import YouTubeIframe from 'react-native-youtube-iframe';
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -9,36 +9,60 @@ import { AntDesign } from '@expo/vector-icons';
 const EducationalVideosScreen = () => {
 
   const [videoList, setVideoList] = useState([]);
-  const navigation = useNavigation();
+  const [filteredVideoList, setFilteredVideoList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
-    GetVideo();
-  }, []);
+      GetVideo();
+  }, [])
+
+  useEffect(() => {
+    // Filter the video list whenever searchQuery changes
+    const filteredData = videoList.filter(video => 
+      video.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredVideoList(filteredData);
+  }, [searchQuery, videoList]);
 
   const GetVideo = async () => {
-    setVideoList([]);
-    const q = query(collection(db, 'Videos'));
-    const querySnapShot = await getDocs(q);
+      setVideoList([]);
+      const q = query(collection(db, 'Videos'));
+      const querySnapShot = await getDocs(q);
 
-    let videoData = [];
-    querySnapShot.forEach((doc) => {
-      console.log(doc.data());
-      videoData.push(doc.data());
-    });
-    setVideoList(videoData);
+      let videoData = [];
+      querySnapShot.forEach((doc) => {
+          videoData.push(doc.data());
+      });
+      setVideoList(videoData);
+      setLoading(false); 
   };
+
+  if (loading) {
+    // Show loading indicator while fetching data
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 250,}}>
+        <ActivityIndicator size="large" color="orange" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View>
       <View style={{ padding: 20, justifyContent: 'center' }}>
         <View style={styles.searchContainer}>
           <AntDesign name="search1" size={24} color="black" />
-          <TextInput placeholder="Search" />
+          <TextInput 
+            placeholder='Search'
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
+          />
         </View>
       </View>
 
       <FlatList
-        data={videoList}
+        data={filteredVideoList}
         renderItem={({ item }) => (
           <View style={styles.videoContainer}>
             <YouTubeIframe

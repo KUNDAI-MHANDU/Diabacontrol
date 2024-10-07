@@ -1,5 +1,5 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Image, Animated, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
@@ -20,6 +20,7 @@ export default function FoodScanner() {
   const { width } = useWindowDimensions();
   let cameraRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const slideAnim = useRef(new Animated.Value(1000)).current;  
 
   const bottomSheetModalRef = useRef(null);
 
@@ -32,6 +33,11 @@ export default function FoodScanner() {
       const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
       setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
     })();
+    Animated.timing(slideAnim, {
+      toValue: 0,  
+      duration: 1000,  
+      useNativeDriver: true,  
+    }).start();
   }, []);
 
   const takePic = async () => {
@@ -128,12 +134,28 @@ export default function FoodScanner() {
               loop
               />
             </View>
-            <LinearGradient
+            {result?.length > 0 ?(
+              <Animated.View style={[{ transform: [{ translateY: slideAnim }] }]}>
+              <View>
+                           <LinearGradient
               colors={['rgba(255,165,0,0.7)', 'transparent']}
               style={styles.contentContainer}
             >
-              <Text>{result || "Processing..."}</Text>
+              <Text>{result}</Text>
             </LinearGradient>
+              </View>
+              </Animated.View>
+            ):(
+              <View style={{justifyContent: 'center', alignItems:'center'}}>
+              <View style={{height: 140, width: "100%", justifyContent: 'center', alignItems:'center'}}>
+                <LottieView source={require("../../assets/Animation - 1728129334728.json")}
+                  style={{width: "100%", height: "100%"}}
+                  autoPlay
+                  loop
+                />
+              </View>
+              </View>
+            )}
             <View style={{alignItems: 'center', gap: 10,}}>
               <TouchableOpacity style={styles.button} onPress={sharePic}>
                 <Text>Share</Text>

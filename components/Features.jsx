@@ -38,11 +38,11 @@ const Features = () => {
                         fontSize: 12,
                     }}>Reports</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.fContainer}>
-                    <Fontisto style={styles.features} name="first-aid-alt" size={34} color="orange" />
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('lifestyle')}>
+                    <FontAwesome5 style={styles.features} name="heartbeat" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
-                    }}>Hypoglycemic</Text>
+                    }}>      Life Style      </Text>
                 </TouchableOpacity>
             </View>
             <View style={{
@@ -61,12 +61,12 @@ const Features = () => {
                         fontSize: 12,
                     }}>Ask Communite</Text>
                 </TouchableOpacity>
-                <View style={styles.fContainer}>
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('food')}>
                     <Ionicons style={styles.features} name="fast-food" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
                     }}>Food Suggestions</Text>
-                </View>
+                </TouchableOpacity>
             </View>
             <View style={{
                 display: 'flex',
@@ -84,12 +84,12 @@ const Features = () => {
                         fontSize: 12,
                     }}>Ask AI</Text>
                 </TouchableOpacity>
-                <View style={styles.fContainer}>
+                <TouchableOpacity style={styles.fContainer} onPress={() => navigation.navigate('tips')}>
                     <MaterialCommunityIcons style={styles.features} name="head-heart" size={34} color="orange" />
                     <Text style={{
                         fontSize: 12,
                     }}>Tips for Diabetes</Text>
-                </View>
+                </TouchableOpacity>
             </View>
         </View>
     </View>

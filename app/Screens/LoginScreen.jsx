@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as WebBrowser from "expo-web-browser";
 import useWarmUpBrowser  from "../../hooks/useWarmUpBrowser"
 import { useOAuth } from '@clerk/clerk-expo';
+import { useSignIn } from '@clerk/clerk-expo'
 
 const image = require('../../assets/Food.png');
 const icon1 = require('../../assets/facebook.png');
@@ -81,8 +82,34 @@ export default function LoginScreen() {
     transform: [{ rotate: rotateInterpolate }],
   };
 
-  const [email, setEmail] = useState('');
+  const { signIn, setActive, isLoaded } = useSignIn()
+
+  const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
+
+  
+  const onSignInPress = useCallback(async () => {
+    if (!isLoaded) {
+      
+    }
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: emailAddress,
+        password,
+      })
+
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId })
+      } else {
+        // See https://clerk.com/docs/custom-flows/error-handling
+        // for more info on error handling
+        console.error(JSON.stringify(signInAttempt, null, 2))
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }, [isLoaded, emailAddress, password])
 
   return (
     <KeyboardAvoidingView
@@ -100,8 +127,8 @@ export default function LoginScreen() {
           <View style={styles.input}>
             <Fontisto name="email" size={24} color="black" />
             <TextInput
-              onChangeText={setEmail}
-              value={email}
+              onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+              value={emailAddress}
               placeholder="Enter your email"
               style={styles.textInput}
             />
@@ -110,7 +137,7 @@ export default function LoginScreen() {
           <View style={styles.input}>
             <EvilIcons name="lock" size={34} color="black" />
             <TextInput
-              onChangeText={setPassword}
+              onChangeText={(password) => setPassword(password)}
               value={password}
               placeholder="Enter your password"
               secureTextEntry={true}
@@ -120,7 +147,7 @@ export default function LoginScreen() {
           <TouchableOpacity style={{ alignSelf: "flex-end" }}>
             <Text>Forgot Password</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={onSignInPress}>
             <Text>Sign In</Text>
           </TouchableOpacity>
           <View style={styles.separator}>
@@ -139,12 +166,11 @@ export default function LoginScreen() {
               <Image source={icon3} style={styles.icon} />
             </TouchableOpacity >
           </View>
-          <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            <Text>do not have an account? 
+          <View style={{alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row', gap: 2}}>
+            <Text>do not have an account? </Text>
             <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text style={{color: 'orange'}}> Sign Up Now</Text>
               </Pressable>
-            </Text>
           </View>
         </View>
       </ScrollView>
